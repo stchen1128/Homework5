@@ -51,6 +51,8 @@ docker pull sitong1128/ex-proj
 docker run -it sitong1128/ex-proj
 
 # Retrieve from the container and build the report in your local directory: 
+# For example: 
 mkdir ~/docker_output/
 docker run -v ~/docker_output:/project/output ex-proj
+# Then you can find the report.html in the directory that you created on your local computer, OR you can decide any directory you want to assign on by running "docker run -v /filepath:/project/output ex-proj" alone. 
 ```
