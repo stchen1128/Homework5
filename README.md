@@ -44,11 +44,13 @@ renv::init()
 # To pull the docker image from DockerHub and build the report (and retrieving from the container):
 do:
 ```
-* Pull the docker image from my DockerHub: * 
+# Pull the docker image from my DockerHub:  
 docker pull sitong1128/ex-proj
-* Run the project: *
+
+# Run the project: 
 docker run -it sitong1128/ex-proj
-* Retrieve from the container and build the report: *
+
+# Retrieve from the container and build the report in your local directory: 
 mkdir ~/docker_output/
 docker run -v ~/docker_output:/project/output ex-proj
 ```
