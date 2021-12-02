@@ -6,7 +6,7 @@ Please download these files for running the analysis.
 To start the analysis you will need to install some R packages. The requaired packages ccan be installed using R commands. 
 ```
 installed_pkgs <- row.names(installed.packages())
-pkgs <- c("readr", "tidyverse", "ggplot2", "data.table", "reshape2", "lubridate", "ggthemes", "scales" )
+pkgs <- c("readr", "tidyverse", "ggplot2", "data.table", "reshape2", "lubridate", "ggthemes", "scales","here" )
 for(p in pkgs){
 	if(!(p %in% install_pkgs)){
 		install.packages(p)
@@ -39,5 +39,16 @@ make
 do:
 ```
 renv::init()
-```# Homework4
-# Homework4
+```
+
+# To pull the docker image from DockerHub and build the report (and retrieving from the container):
+do:
+```
+* Pull the docker image from my DockerHub: * 
+docker pull sitong1128/ex-proj
+* Run the project: *
+docker run -it sitong1128/ex-proj
+* Retrieve from the container and build the report: *
+mkdir ~/docker_output/
+docker run -v ~/docker_output:/project/output ex-proj
+```

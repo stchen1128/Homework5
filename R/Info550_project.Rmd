@@ -1,9 +1,16 @@
 ---
 title: "R Project 2"
 author: "Sitong Chen"
-date: "9/21/2021"
+date: "11/30/2021"
 output: "html_document"
 ---
+## Info550 - R project
+####  Two dataset are used in this project: movies and ratings, I would like to explore the rating distribution by time and by the number of users, clean the movies dataset and see how many movies fall into each genre
+```{r}
+library(here)
+here::i_am("R/Info550_project.Rmd")
+knitr::opts_knit$set(root.dir = here::here())
+```
 
 ```{r, message=FALSE}
 library(readr)
@@ -11,13 +18,11 @@ library(tidyverse)
 library(ggplot2)
 library(data.table)
 library(reshape2)
-library(table1)
 ```
 
 ```{r,}
-setwd("/Users/kkchen/Desktop/FALL2021/INFO550/project/IMDB/Input")
-movies <- read.csv("movies.csv", stringsAsFactors=FALSE)
-ratings <- read.csv("ratings.csv")
+movies <- read.csv(here::here('data','movies.csv'),stringsAsFactors=FALSE)
+ratings <- read.csv(here::here('data',"ratings.csv"))
 str(movies)
 ```
 
@@ -42,8 +47,8 @@ tibble('Initial Date' = date(as_datetime(min(movie_rating$timestamp),origin="197
        'Final Date' = date(as_datetime(max(movie_rating$timestamp),origin="1970-01-01"))) %>%
   mutate(Period = duration(max(movie_rating$timestamp)-min(movie_rating$timestamp)))
 ```
-
-```{r}
+#### Plot a bar graph to see the number of rating distribution from 1996 till 2016
+```{r,message=FALSE}
 library(ggthemes)
 library(scales)
 movie_rating %>% mutate(year = year(as_datetime(timestamp, origin="1970-01-01"))) %>%
@@ -56,9 +61,12 @@ movie_rating %>% mutate(year = year(as_datetime(timestamp, origin="1970-01-01"))
     theme_economist()
 ```
 
-#### Rating Distribution
+#### Plot a bar graph to see the rating distribution based on ratings from 1 to 5
 ```{r}
 summary(movie_rating$rating)
+```
+
+```{r,message=FALSE}
 # Count the number for each ratings
 rating_dist <- movie_rating %>% group_by(rating) %>% summarize(n=n())
 g <- ggplot(rating_dist, aes(x=rating, y=n))+geom_col()+labs(title="Ratings Distribution", y="Count",x="Ratings")
@@ -75,7 +83,7 @@ movie_rating %>% group_by(userId) %>%
 ```
 
 #### Distribution of users with their rating count
-```{r}
+```{r, message=FALSE}
 movie_rating %>% group_by(userId)%>%
   summarise(n=n()) %>%
   ggplot(aes(n)) + 
@@ -86,13 +94,8 @@ movie_rating %>% group_by(userId)%>%
   ylab("Number of Users")+
   scale_y_continuous(labels=comma)+
   theme_economist()
-
-
 ```
 
-
-
-##### I see there is a machine learning approach to study these datasets and create a movie recommendation system. I'm currently taking a machine learning course and I would like to try it out!
 #### Create a genre table with all the genres listed in movies dataset
 ##### I need to convert the genres present in the movies dataframe into a more usable format by the users.
 ##### To create a one-hot encoding to create a matrix that composes of corresponding genres for each of the films. 
@@ -125,11 +128,21 @@ str(genre_mat2)
 ```
 
 
-#### Create a search matrix that can perform an easy search of the films by specifying the genre present in our list. 
+#### Create a dataframe specifying the genre present in our list so that we can see which genres this movie belongs to. 
 ```{r}
-searchmatrix <- cbind(movies[,1:2],genre_mat2)
-head(searchmatrix)
+Movie_genre <- cbind(movies[,1:2],genre_mat2)
+head(Movie_genre)
+```
+#### How many movies fall into each genre, which genre has the most movies and which genre has the least?
+#### We can see from the output below, Drama has the most movies, and Film-Noir has the least. 
+```{r}
+Total_movie_genre <- as.data.frame(t(Movie_genre[,3:20]))
+Total_movie_genre$genre <- c("Action", "Adventure", "Animation", "Children", 
+                "Comedy", "Crime","Documentary", "Drama", "Fantasy",
+                "Film-Noir", "Horror", "Musical", "Mystery","Romance",
+                "Sci-Fi", "Thriller", "War", "Western")
+Total_movie_genre <- Total_movie_genre %>%mutate(total_movies = rowSums(Total_movie_genre[1:10329]))%>%select(c(genre,total_movies))
+Total_movie_genre %>% arrange(total_movies,descending=TRUE)
+
 ```
 
-
-#### To be continued.....
